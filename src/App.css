@@ -24,6 +24,31 @@
   max-width: 80ch;
 }
 
+.view-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #b79665;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  color: #5d3d17;
+  text-decoration: none;
+  font-weight: 700;
+  background: #fff7e8;
+}
+
+.view-link:hover,
+.view-link:focus-visible {
+  background: #ffecca;
+}
+
 .notes,
 .scale,
 .progress-panel,
@@ -284,6 +309,60 @@ button:disabled {
 .ranking-link:hover,
 .ranking-link:focus-visible {
   text-decoration: underline;
+}
+
+.schedule-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.chapters {
+  margin-top: 0.95rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.chapter-tag {
+  margin: 0.35rem 0;
+}
+
+.chapter-tag h3 {
+  margin: 0;
+  color: #5f4e33;
+}
+
+.chapter-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.chapter {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fffdf8;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.chapter:hover,
+.chapter-link:focus-visible .chapter {
+  border-color: #9b7f54;
+  background: #fff7ea;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  color: #63533c;
+}
+
+.chapter-title {
+  font-size: 1rem;
 }
 
 .sr-only {

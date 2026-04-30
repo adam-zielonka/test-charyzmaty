@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react'
+import RozpiskaView from './RozpiskaView'
 import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
 const RESULT_PARAM = 'wynik'
+const VIEW_PARAM = 'widok'
+const ROZPISKA_VIEW_VALUE = 'rozpiska'
 const EMPTY_ANSWERS = new Array(questions.length).fill(null) as (number | null)[]
 
 const decodeAnswersFromUrl = () => {
@@ -26,8 +29,33 @@ const decodeAnswersFromUrl = () => {
 const encodeAnswersForUrl = (values: (number | null)[]) =>
   values.map((value) => (value === null ? 'x' : value.toString())).join('')
 
+const isRozpiskaViewEnabled = () => {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return new URLSearchParams(window.location.search).get(VIEW_PARAM) === ROZPISKA_VIEW_VALUE
+}
+
+const buildViewUrl = (showRozpiska: boolean) => {
+  if (typeof window === 'undefined') {
+    return '/'
+  }
+
+  const nextUrl = new URL(window.location.href)
+
+  if (showRozpiska) {
+    nextUrl.searchParams.set(VIEW_PARAM, ROZPISKA_VIEW_VALUE)
+  } else {
+    nextUrl.searchParams.delete(VIEW_PARAM)
+  }
+
+  return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
+}
+
 function App() {
   const urlPattern = /https?:\/\/[^\s)]+/g
+  const showRozpiskaView = isRozpiskaViewEnabled()
 
   const renderIntroNote = (note: string) => {
     const normalizedNote = note.replace(/^\d+\.\s*/, '')
@@ -140,12 +168,21 @@ function App() {
     }
   }
 
+  if (showRozpiskaView) {
+    return <RozpiskaView backToTestUrl={buildViewUrl(false)} />
+  }
+
   return (
     <main className="app">
       <header className="header">
         <p className="eyebrow">Kwestionariusz</p>
         <h1>Test Charyzmaty</h1>
         <p className="description">{instructionText}</p>
+        <div className="view-actions">
+          <a className="view-link" href={buildViewUrl(true)}>
+            Zobacz plan formacji
+          </a>
+        </div>
       </header>
 
       <section className="notes">
