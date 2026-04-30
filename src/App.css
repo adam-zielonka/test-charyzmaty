@@ -198,6 +198,37 @@ fieldset {
   flex-wrap: wrap;
 }
 
+.result-link-panel {
+  margin: 0.9rem 0 1rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.result-link-panel label {
+  font-weight: 700;
+}
+
+.result-link-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem;
+}
+
+.result-link-row input {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  background: #fffcf4;
+  min-width: 0;
+}
+
+.result-link-status {
+  min-height: 1.35rem;
+  color: var(--muted);
+  margin: 0;
+}
+
 button {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -294,6 +325,11 @@ button:disabled {
 
   .progress-track,
   .bar {
+    width: 100%;
+  }
+
+  .result-link-row {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 

@@ -2,6 +2,30 @@ import { useMemo, useState } from 'react'
 import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
+const RESULT_PARAM = 'wynik'
+const EMPTY_ANSWERS = new Array(questions.length).fill(null) as (number | null)[]
+
+const decodeAnswersFromUrl = () => {
+  if (typeof window === 'undefined') {
+    return [...EMPTY_ANSWERS]
+  }
+
+  const encodedAnswers = new URLSearchParams(window.location.search).get(RESULT_PARAM)
+
+  if (!encodedAnswers || encodedAnswers.length !== questions.length) {
+    return [...EMPTY_ANSWERS]
+  }
+
+  if (!/^[0-4x]+$/.test(encodedAnswers)) {
+    return [...EMPTY_ANSWERS]
+  }
+
+  return [...encodedAnswers].map((value) => (value === 'x' ? null : Number(value)))
+}
+
+const encodeAnswersForUrl = (values: (number | null)[]) =>
+  values.map((value) => (value === null ? 'x' : value.toString())).join('')
+
 function App() {
   const urlPattern = /https?:\/\/[^\s)]+/g
 
@@ -32,9 +56,8 @@ function App() {
     })
   }
 
-  const [answers, setAnswers] = useState<(number | null)[]>(
-    () => new Array(questions.length).fill(null),
-  )
+  const [answers, setAnswers] = useState<(number | null)[]>(decodeAnswersFromUrl)
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
   const answeredCount = useMemo(
     () => answers.filter((answer) => answer !== null).length,
@@ -42,6 +65,16 @@ function App() {
   )
 
   const progressPercent = Math.round((answeredCount / questions.length) * 100)
+  const shareLink = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return ''
+    }
+
+    const nextUrl = new URL(window.location.href)
+    nextUrl.searchParams.set(RESULT_PARAM, encodeAnswersForUrl(answers))
+    return nextUrl.toString()
+  }, [answers])
+
   const scores = useMemo(() => {
     const initialScores = Object.fromEntries(charisms.map((name) => [name, 0])) as Record<
       (typeof charisms)[number],
@@ -79,7 +112,22 @@ function App() {
   }
 
   const resetAnswers = () => {
-    setAnswers(new Array(questions.length).fill(null))
+    setAnswers([...EMPTY_ANSWERS])
+    setCopyStatus('idle')
+  }
+
+  const handleCopyLink = async () => {
+    if (!shareLink) {
+      setCopyStatus('error')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareLink)
+      setCopyStatus('copied')
+    } catch {
+      setCopyStatus('error')
+    }
   }
 
   return (
@@ -171,6 +219,20 @@ function App() {
         <p className="result-hint">
           Każdy charyzmat ma maksymalnie {maxPossibleScore} punktów (5 pytań x 4 punkty).
         </p>
+
+        <div className="result-link-panel">
+          <label htmlFor="result-link">Link do tego wyniku</label>
+          <div className="result-link-row">
+            <input id="result-link" type="text" value={shareLink} readOnly />
+            <button type="button" onClick={handleCopyLink}>
+              Kopiuj link
+            </button>
+          </div>
+          <p className="result-link-status" aria-live="polite">
+            {copyStatus === 'copied' && 'Link skopiowany do schowka.'}
+            {copyStatus === 'error' && 'Nie udało się skopiować linku. Skopiuj go ręcznie z pola.'}
+          </p>
+        </div>
 
         <ol className="ranking">
           {ranking.map((item, index) => {
