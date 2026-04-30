@@ -40,6 +40,21 @@ body {
   box-shadow: 0 12px 42px rgba(64, 40, 18, 0.12);
 }
 
+@media (max-width: 600px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    margin: 0;
+    min-height: 100dvh;
+    border-radius: 0;
+    border-inline: 0;
+    box-shadow: none;
+  }
+}
+
 h1,
 h2 {
   margin: 0;
