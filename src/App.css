@@ -28,6 +28,7 @@
 .scale,
 .progress-panel,
 .question-section,
+.result-action,
 .results {
   background: var(--panel-bg);
   border: 1px solid var(--line);
@@ -58,14 +59,6 @@
   align-items: center;
   gap: 0.8rem;
   font-weight: 600;
-}
-
-.scale .value {
-  width: 2rem;
-  text-align: center;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fffefb;
 }
 
 .progress-panel {
@@ -149,15 +142,14 @@ fieldset {
 }
 
 .answer-options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.45rem;
 }
 
 .answer-options label {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
   position: relative;
 }
 
@@ -167,13 +159,13 @@ fieldset {
 }
 
 .answer-options span {
-  min-width: 2rem;
-  text-align: center;
+  width: 100%;
+  text-align: left;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 0.24rem 0.7rem;
+  padding: 0.4rem 0.7rem;
   background: #f7f2e7;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .answer-options input:checked + span {
@@ -186,6 +178,14 @@ fieldset {
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;
+}
+
+.result-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 button {
@@ -249,7 +249,8 @@ button:disabled {
 @media (max-width: 860px) {
   .progress-panel,
   .question-header,
-  .results-header {
+  .results-header,
+  .result-action {
     flex-direction: column;
     align-items: flex-start;
   }

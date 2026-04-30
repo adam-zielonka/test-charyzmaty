@@ -9,6 +9,7 @@ function App() {
     () => new Array(questions.length).fill(null),
   )
   const [page, setPage] = useState(0)
+  const [showResults, setShowResults] = useState(false)
 
   const answeredCount = useMemo(
     () => answers.filter((answer) => answer !== null).length,
@@ -16,6 +17,7 @@ function App() {
   )
 
   const progressPercent = Math.round((answeredCount / questions.length) * 100)
+  const isComplete = answeredCount === questions.length
   const pageCount = Math.ceil(questions.length / QUESTIONS_PER_PAGE)
   const pageStart = page * QUESTIONS_PER_PAGE
   const pageQuestions = questions.slice(pageStart, pageStart + QUESTIONS_PER_PAGE)
@@ -59,6 +61,7 @@ function App() {
   const resetAnswers = () => {
     setAnswers(new Array(questions.length).fill(null))
     setPage(0)
+    setShowResults(false)
   }
 
   return (
@@ -83,7 +86,6 @@ function App() {
         <ul>
           {answerScale.map((item) => (
             <li key={item.value}>
-              <span className="value">{item.value}</span>
               <span>{item.label}</span>
             </li>
           ))}
@@ -133,7 +135,7 @@ function App() {
                           checked={answers[absoluteIndex] === option.value}
                           onChange={() => handleAnswerChange(absoluteIndex, option.value)}
                         />
-                        <span>{option.value}</span>
+                        <span>{option.label}</span>
                       </label>
                     ))}
                   </div>
@@ -157,6 +159,19 @@ function App() {
         </div>
       </section>
 
+      <section className="result-action">
+        <h2>Wynik</h2>
+        <button type="button" onClick={() => setShowResults(true)} disabled={!isComplete}>
+          Pokaż wynik
+        </button>
+        {!isComplete && (
+          <p className="result-hint">
+            Aby zobaczyć wynik, odpowiedz najpierw na wszystkie 115 pytań.
+          </p>
+        )}
+      </section>
+
+      {showResults && (
       <section className="results">
         <div className="results-header">
           <h2>Wynik</h2>
@@ -189,6 +204,7 @@ function App() {
           })}
         </ol>
       </section>
+      )}
     </main>
   )
 }
