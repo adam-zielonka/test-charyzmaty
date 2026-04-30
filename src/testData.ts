@@ -56,6 +56,32 @@ export const charisms = [
   "Mądrości/zrozumienia"
 ] as const
 
+export const charismVideoLinks: Record<(typeof charisms)[number], string> = {
+  Administracji: 'https://youtu.be/SA8g9tP3Z2M',
+  Pasterski: 'https://youtu.be/-pkuotGydII',
+  Celibatu: 'https://youtu.be/FMdnuaWREsc',
+  Rzemiosła: 'https://youtu.be/lB1vS7cIxzI',
+  'Dobrowolnego ubóstwa': 'https://youtu.be/Bw3kB2RaNkg',
+  Ewangelizacji: 'https://youtu.be/qZFjgv7SGIQ',
+  Zachęty: 'https://youtu.be/su9ItIkiyh4',
+  Pomocy: 'https://youtu.be/cGC0fKJ7IJg',
+  Dawania: 'https://youtu.be/dqYhyMFbTOs',
+  Uzdrawiania: 'https://youtu.be/HN3DhWt-kDw',
+  Gościnności: 'https://youtu.be/ymrBbyADxZE',
+  Wstawiennictwa: 'https://youtu.be/XJCGbpKAACo',
+  Wiedzy: 'https://youtu.be/q1MT5DW_VFY',
+  Miłosierdzia: 'https://youtu.be/xB_XLBe1eII',
+  Misyjny: 'https://youtu.be/mMcEWza2hO4',
+  Muzyki: 'https://youtu.be/Yey2u5sky0g',
+  Liderski: 'https://youtu.be/jPqyGQ5q30I',
+  Wiary: 'https://youtu.be/GGedkcMAff8',
+  Prorocki: 'https://youtu.be/_0RW4e_u76A',
+  Służby: 'https://youtu.be/WeeJmwHn94g',
+  Nauczania: 'https://youtu.be/_UTmYJUtYF0',
+  Pisania: 'https://youtu.be/xzFYY3ogafo',
+  'Mądrości/zrozumienia': 'https://youtu.be/ctQJtgqyoKg',
+}
+
 export const questions = [
   "Łatwo przychodzi mi zarządzanie ludźmi i prowadzenie grup, by osiągać konkretne cele.",
   "Lubię organizować małe grupy, w których możemy się poznawać i dzielić wiarą.",

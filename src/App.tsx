@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { answerScale, charisms, instructionText, introNotes, questions } from './testData'
+import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
 function App() {
@@ -150,7 +150,14 @@ function App() {
             return (
               <li key={item.name} className={index < 3 ? 'highlighted' : ''}>
                 <div className="ranking-main">
-                  <span className="ranking-name">{item.name}</span>
+                  <a
+                    className="ranking-name ranking-link"
+                    href={charismVideoLinks[item.name]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.name}
+                  </a>
                   <span className="ranking-score">
                     {item.score}/{maxPossibleScore}
                   </span>
