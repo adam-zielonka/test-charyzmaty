@@ -258,28 +258,11 @@ function App() {
       <section className="results">
         <div className="results-header">
           <h2>Wynik</h2>
-          <button type="button" onClick={resetAnswers}>
-            Wyczyść odpowiedzi
-          </button>
         </div>
 
         <p className="result-hint">
           Każdy charyzmat ma maksymalnie {maxPossibleScore} punktów (5 pytań x 4 punkty).
         </p>
-
-        <div className="result-link-panel">
-          <label htmlFor="result-link">Link do tego wyniku</label>
-          <div className="result-link-row">
-            <input id="result-link" type="text" value={shareLink} readOnly />
-            <button type="button" onClick={handleCopyLink}>
-              Kopiuj link
-            </button>
-          </div>
-          <p className="result-link-status" aria-live="polite">
-            {copyStatus === 'copied' && 'Link skopiowany do schowka.'}
-            {copyStatus === 'error' && 'Nie udało się skopiować linku. Skopiuj go ręcznie z pola.'}
-          </p>
-        </div>
 
         <ol className="ranking">
           {ranking.map((item, index) => {
@@ -307,6 +290,32 @@ function App() {
             )
           })}
         </ol>
+      </section>
+
+      <section className="result-actions-grid">
+        <section className="result-action">
+          <h3>Zarządzanie odpowiedziami</h3>
+          <button type="button" onClick={resetAnswers}>
+            Wyczyść odpowiedzi
+          </button>
+        </section>
+
+        <section className="result-action">
+          <h3>Udostępnij ten wynik</h3>
+          <div className="result-link-panel">
+            <label htmlFor="result-link">Link do tego wyniku</label>
+            <div className="result-link-row">
+              <input id="result-link" type="text" value={shareLink} readOnly />
+              <button type="button" onClick={handleCopyLink}>
+                Kopiuj link
+              </button>
+            </div>
+            <p className="result-link-status" aria-live="polite">
+              {copyStatus === 'copied' && 'Link skopiowany do schowka.'}
+              {copyStatus === 'error' && 'Nie udało się skopiować linku. Skopiuj go ręcznie z pola.'}
+            </p>
+          </div>
+        </section>
       </section>
     </main>
   )

@@ -217,10 +217,20 @@ fieldset {
 
 .result-action {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
   gap: 0.8rem;
-  flex-wrap: wrap;
+}
+
+.result-actions-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.result-action h3 {
+  margin: 0;
 }
 
 .result-link-panel {
