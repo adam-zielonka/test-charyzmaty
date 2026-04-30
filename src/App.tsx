@@ -112,6 +112,16 @@ function App() {
   }
 
   const resetAnswers = () => {
+    if (answeredCount > 0) {
+      const shouldReset = window.confirm(
+        'Czy na pewno chcesz wyczyścić wszystkie odpowiedzi? Tej operacji nie można cofnąć.',
+      )
+
+      if (!shouldReset) {
+        return
+      }
+    }
+
     setAnswers([...EMPTY_ANSWERS])
     setCopyStatus('idle')
   }
