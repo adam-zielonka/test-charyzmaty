@@ -246,6 +246,23 @@ button:disabled {
   border: 0;
 }
 
+@media (min-width: 1200px) {
+  .answer-options {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .answer-options label {
+    height: 100%;
+  }
+
+  .answer-options span {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
 @media (max-width: 860px) {
   .progress-panel,
   .question-header,
