@@ -1,121 +1,195 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useMemo, useState } from 'react'
+import { answerScale, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
+const QUESTIONS_PER_PAGE = 10
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [answers, setAnswers] = useState<(number | null)[]>(
+    () => new Array(questions.length).fill(null),
+  )
+  const [page, setPage] = useState(0)
+
+  const answeredCount = useMemo(
+    () => answers.filter((answer) => answer !== null).length,
+    [answers],
+  )
+
+  const progressPercent = Math.round((answeredCount / questions.length) * 100)
+  const pageCount = Math.ceil(questions.length / QUESTIONS_PER_PAGE)
+  const pageStart = page * QUESTIONS_PER_PAGE
+  const pageQuestions = questions.slice(pageStart, pageStart + QUESTIONS_PER_PAGE)
+
+  const scores = useMemo(() => {
+    const initialScores = Object.fromEntries(charisms.map((name) => [name, 0])) as Record<
+      (typeof charisms)[number],
+      number
+    >
+
+    answers.forEach((answer, index) => {
+      if (answer === null) {
+        return
+      }
+
+      const charismName = charisms[index % charisms.length]
+      initialScores[charismName] += answer
+    })
+
+    return initialScores
+  }, [answers])
+
+  const ranking = useMemo(
+    () =>
+      charisms
+        .map((name) => ({ name, score: scores[name] }))
+        .sort((a, b) => b.score - a.score),
+    [scores],
+  )
+
+  const maxPossibleScore = 20
+
+  const handleAnswerChange = (questionIndex: number, value: number) => {
+    setAnswers((currentAnswers) => {
+      const nextAnswers = [...currentAnswers]
+      nextAnswers[questionIndex] = value
+      return nextAnswers
+    })
+  }
+
+  const resetAnswers = () => {
+    setAnswers(new Array(questions.length).fill(null))
+    setPage(0)
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <main className="app">
+      <header className="header">
+        <p className="eyebrow">Kwestionariusz</p>
+        <h1>Test Charyzmaty</h1>
+        <p className="description">{instructionText}</p>
+      </header>
+
+      <section className="notes">
+        <h2>Uwagi wstępne</h2>
+        <ol>
+          {introNotes.map((note) => (
+            <li key={note}>{note.replace(/^\d+\.\s*/, '')}</li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="scale">
+        <h2>Skala odpowiedzi</h2>
+        <ul>
+          {answerScale.map((item) => (
+            <li key={item.value}>
+              <span className="value">{item.value}</span>
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="progress-panel" aria-live="polite">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+          <p className="progress-title">Postęp</p>
+          <p className="progress-subtitle">
+            Odpowiedziano na {answeredCount} z {questions.length} pytań
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div>
+          <p className="progress-value">{progressPercent}%</p>
+          <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}>
+            <span style={{ width: `${progressPercent}%` }}></span>
+          </div>
         </div>
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <section className="question-section">
+        <div className="question-header">
+          <h2>Pytania</h2>
+          <p>
+            Strona {page + 1} z {pageCount}
+          </p>
+        </div>
+
+        <div className="question-list">
+          {pageQuestions.map((question, index) => {
+            const absoluteIndex = pageStart + index
+
+            return (
+              <article className="question-card" key={`${absoluteIndex}-${question}`}>
+                <p className="question-number">{absoluteIndex + 1}.</p>
+                <p className="question-text">{question}</p>
+
+                <fieldset>
+                  <legend className="sr-only">Wybierz ocenę</legend>
+                  <div className="answer-options">
+                    {answerScale.map((option) => (
+                      <label key={option.value}>
+                        <input
+                          type="radio"
+                          name={`question-${absoluteIndex}`}
+                          checked={answers[absoluteIndex] === option.value}
+                          onChange={() => handleAnswerChange(absoluteIndex, option.value)}
+                        />
+                        <span>{option.value}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              </article>
+            )
+          })}
+        </div>
+
+        <div className="pagination">
+          <button type="button" onClick={() => setPage((currentPage) => Math.max(currentPage - 1, 0))} disabled={page === 0}>
+            Poprzednia
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage((currentPage) => Math.min(currentPage + 1, pageCount - 1))}
+            disabled={page >= pageCount - 1}
+          >
+            Następna
+          </button>
+        </div>
+      </section>
+
+      <section className="results">
+        <div className="results-header">
+          <h2>Wynik</h2>
+          <button type="button" onClick={resetAnswers}>
+            Wyczyść odpowiedzi
+          </button>
+        </div>
+
+        <p className="result-hint">
+          Każdy charyzmat ma maksymalnie {maxPossibleScore} punktów (5 pytań x 4 punkty).
+        </p>
+
+        <ol className="ranking">
+          {ranking.map((item, index) => {
+            const widthPercent = Math.round((item.score / maxPossibleScore) * 100)
+
+            return (
+              <li key={item.name} className={index < 3 ? 'highlighted' : ''}>
+                <div className="ranking-main">
+                  <span className="ranking-name">{item.name}</span>
+                  <span className="ranking-score">
+                    {item.score}/{maxPossibleScore}
+                  </span>
+                </div>
+                <div className="bar" aria-hidden="true">
+                  <span style={{ width: `${widthPercent}%` }}></span>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+      </section>
+    </main>
   )
 }
 
