@@ -6,7 +6,6 @@ function App() {
   const [answers, setAnswers] = useState<(number | null)[]>(
     () => new Array(questions.length).fill(null),
   )
-  const [showResults, setShowResults] = useState(false)
 
   const answeredCount = useMemo(
     () => answers.filter((answer) => answer !== null).length,
@@ -14,8 +13,6 @@ function App() {
   )
 
   const progressPercent = Math.round((answeredCount / questions.length) * 100)
-  const isComplete = answeredCount === questions.length
-
   const scores = useMemo(() => {
     const initialScores = Object.fromEntries(charisms.map((name) => [name, 0])) as Record<
       (typeof charisms)[number],
@@ -54,7 +51,6 @@ function App() {
 
   const resetAnswers = () => {
     setAnswers(new Array(questions.length).fill(null))
-    setShowResults(false)
   }
 
   return (
@@ -135,19 +131,6 @@ function App() {
         </div>
       </section>
 
-      <section className="result-action">
-        <h2>Wynik</h2>
-        <button type="button" onClick={() => setShowResults(true)} disabled={!isComplete}>
-          Pokaż wynik
-        </button>
-        {!isComplete && (
-          <p className="result-hint">
-            Aby zobaczyć wynik, odpowiedz najpierw na wszystkie 115 pytań.
-          </p>
-        )}
-      </section>
-
-      {showResults && (
       <section className="results">
         <div className="results-header">
           <h2>Wynik</h2>
@@ -180,7 +163,6 @@ function App() {
           })}
         </ol>
       </section>
-      )}
     </main>
   )
 }
