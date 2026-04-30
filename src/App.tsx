@@ -3,6 +3,35 @@ import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, 
 import './App.css'
 
 function App() {
+  const urlPattern = /https?:\/\/[^\s)]+/g
+
+  const renderIntroNote = (note: string) => {
+    const normalizedNote = note.replace(/^\d+\.\s*/, '')
+    const noteParts = normalizedNote.split(urlPattern)
+    const noteUrls = normalizedNote.match(urlPattern) ?? []
+
+    return noteParts.flatMap((part, index) => {
+      const url = noteUrls[index]
+
+      if (!url) {
+        return [part]
+      }
+
+      return [
+        part,
+        <a
+          key={`${url}-${index}`}
+          className="note-link"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {url}
+        </a>,
+      ]
+    })
+  }
+
   const [answers, setAnswers] = useState<(number | null)[]>(
     () => new Array(questions.length).fill(null),
   )
@@ -65,7 +94,7 @@ function App() {
         <h2>Uwagi wstępne</h2>
         <ol>
           {introNotes.map((note) => (
-            <li key={note}>{note.replace(/^\d+\.\s*/, '')}</li>
+            <li key={note}>{renderIntroNote(note)}</li>
           ))}
         </ol>
       </section>

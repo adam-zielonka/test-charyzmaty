@@ -47,6 +47,17 @@
   margin: 0.7rem 0;
 }
 
+.note-link {
+  color: #1e6f93;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.note-link:hover,
+.note-link:focus-visible {
+  color: #15536e;
+}
+
 .scale ul {
   list-style: none;
   padding-left: 0;
