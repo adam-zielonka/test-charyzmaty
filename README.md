@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Test Charyzmaty
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikacja webowa (React + TypeScript + Vite) do wypełniania kwestionariusza rozeznawania charyzmatow i prezentowania wyniku punktowego dla kazdego charyzmatu.
 
-Currently, two official plugins are available:
+## Co robi aplikacja
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Wyswietla 115 pytan w jednej stronie.
+- Uzywa skali odpowiedzi od 0 do 4:
+  - 4: w pelni sie zgadzam
+  - 3: raczej sie zgadzam
+  - 2: nie jestem zdecydowany
+  - 1: raczej sie nie zgadzam
+  - 0: zupelnie sie nie zgadzam
+- Pokazuje postep uzupelniania (liczba odpowiedzi i procent).
+- Liczy punkty dla 23 charyzmatow i wyswietla ranking malejaco.
+- Pokazuje pasek postepu dla kazdego charyzmatu (wynik / 20 punktow).
+- Dla kazdego charyzmatu udostepnia link do odpowiedniej konferencji wideo.
+- Pozwala skopiowac link do aktualnego wyniku oraz wyczyscic wszystkie odpowiedzi.
 
-## React Compiler
+## Logika wyniku
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Jest 23 charyzmaty i 115 pytan, czyli po 5 pytan na charyzmat.
+- Maksymalny wynik jednego charyzmatu to 20 punktow (5 x 4).
+- Punkty sa sumowane na podstawie odpowiedzi i przypisania pytan "po kolei":
+  - pytanie 1 trafia do 1. charyzmatu,
+  - pytanie 2 do 2. charyzmatu,
+  - ...,
+  - pytanie 24 znowu do 1. charyzmatu itd.
 
-## Expanding the ESLint configuration
+## Link do wyniku
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Aplikacja zapisuje odpowiedzi w adresie URL, w parametrze `wynik`.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Kazda odpowiedz jest kodowana jako jeden znak:
+  - `0`, `1`, `2`, `3`, `4` dla zaznaczonej odpowiedzi,
+  - `x` dla braku odpowiedzi.
+- Dlugosc ciagu musi byc rowna liczbie pytan (115).
+- Przy otwarciu takiego linku aplikacja odtwarza zaznaczenia.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Przyklad formatu:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+?wynik=4x203... (115 znakow)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Uruchomienie lokalne
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Wymagania:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 20+ (zalecane)
+- pnpm
+
+Instalacja i start:
+
+```bash
+pnpm install
+pnpm dev
 ```
+
+Aplikacja bedzie dostepna pod adresem podanym przez Vite (domyslnie `http://localhost:5173`).
+
+## Dostepne skrypty
+
+- `pnpm dev` - uruchamia serwer deweloperski Vite.
+- `pnpm build` - kompiluje TypeScript i buduje aplikacje produkcyjna.
+- `pnpm preview` - uruchamia podglad zbudowanej aplikacji.
+- `pnpm lint` - uruchamia ESLint.
+
+## Stos technologiczny
+
+- React 19
+- TypeScript
+- Vite 8
+- ESLint 10
