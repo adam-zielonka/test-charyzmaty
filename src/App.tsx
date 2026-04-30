@@ -2,13 +2,10 @@ import { useMemo, useState } from 'react'
 import { answerScale, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
-const QUESTIONS_PER_PAGE = 10
-
 function App() {
   const [answers, setAnswers] = useState<(number | null)[]>(
     () => new Array(questions.length).fill(null),
   )
-  const [page, setPage] = useState(0)
   const [showResults, setShowResults] = useState(false)
 
   const answeredCount = useMemo(
@@ -18,9 +15,6 @@ function App() {
 
   const progressPercent = Math.round((answeredCount / questions.length) * 100)
   const isComplete = answeredCount === questions.length
-  const pageCount = Math.ceil(questions.length / QUESTIONS_PER_PAGE)
-  const pageStart = page * QUESTIONS_PER_PAGE
-  const pageQuestions = questions.slice(pageStart, pageStart + QUESTIONS_PER_PAGE)
 
   const scores = useMemo(() => {
     const initialScores = Object.fromEntries(charisms.map((name) => [name, 0])) as Record<
@@ -60,7 +54,6 @@ function App() {
 
   const resetAnswers = () => {
     setAnswers(new Array(questions.length).fill(null))
-    setPage(0)
     setShowResults(false)
   }
 
@@ -110,15 +103,11 @@ function App() {
       <section className="question-section">
         <div className="question-header">
           <h2>Pytania</h2>
-          <p>
-            Strona {page + 1} z {pageCount}
-          </p>
+          <p>Wszystkie pytania na jednej stronie</p>
         </div>
 
         <div className="question-list">
-          {pageQuestions.map((question, index) => {
-            const absoluteIndex = pageStart + index
-
+          {questions.map((question, absoluteIndex) => {
             return (
               <article className="question-card" key={`${absoluteIndex}-${question}`}>
                 <p className="question-number">{absoluteIndex + 1}.</p>
@@ -143,19 +132,6 @@ function App() {
               </article>
             )
           })}
-        </div>
-
-        <div className="pagination">
-          <button type="button" onClick={() => setPage((currentPage) => Math.max(currentPage - 1, 0))} disabled={page === 0}>
-            Poprzednia
-          </button>
-          <button
-            type="button"
-            onClick={() => setPage((currentPage) => Math.min(currentPage + 1, pageCount - 1))}
-            disabled={page >= pageCount - 1}
-          >
-            Następna
-          </button>
         </div>
       </section>
 

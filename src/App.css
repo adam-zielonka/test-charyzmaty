@@ -66,6 +66,11 @@
   justify-content: space-between;
   align-items: end;
   gap: 1rem;
+  position: sticky;
+  top: 0.7rem;
+  z-index: 10;
+  background: color-mix(in srgb, var(--panel-bg) 90%, white 10%);
+  backdrop-filter: blur(6px);
 }
 
 .progress-title {
@@ -174,12 +179,6 @@ fieldset {
   border-color: #316f65;
 }
 
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
 .result-action {
   display: flex;
   align-items: center;
@@ -277,7 +276,4 @@ button:disabled {
     width: 100%;
   }
 
-  .pagination {
-    justify-content: flex-start;
-  }
 }
