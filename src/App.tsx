@@ -1,12 +1,16 @@
 import { useMemo, useState } from 'react'
 import RozpiskaView from './RozpiskaView'
+import CharismCardPrintView from './CharismCardPrintView'
 import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
 import './App.css'
 
 const RESULT_PARAM = 'wynik'
 const VIEW_PARAM = 'widok'
 const ROZPISKA_VIEW_VALUE = 'rozpiska'
+const PRINT_CARD_VIEW_VALUE = 'karta'
 const EMPTY_ANSWERS = new Array(questions.length).fill(null) as (number | null)[]
+
+type AppView = 'test' | 'rozpiska' | 'karta'
 
 const decodeAnswersFromUrl = () => {
   if (typeof window === 'undefined') {
@@ -29,25 +33,35 @@ const decodeAnswersFromUrl = () => {
 const encodeAnswersForUrl = (values: (number | null)[]) =>
   values.map((value) => (value === null ? 'x' : value.toString())).join('')
 
-const isRozpiskaViewEnabled = () => {
+const getViewFromUrl = (): AppView => {
   if (typeof window === 'undefined') {
-    return false
+    return 'test'
   }
 
-  return new URLSearchParams(window.location.search).get(VIEW_PARAM) === ROZPISKA_VIEW_VALUE
+  const viewValue = new URLSearchParams(window.location.search).get(VIEW_PARAM)
+
+  if (viewValue === ROZPISKA_VIEW_VALUE) {
+    return 'rozpiska'
+  }
+
+  if (viewValue === PRINT_CARD_VIEW_VALUE) {
+    return 'karta'
+  }
+
+  return 'test'
 }
 
-const buildViewUrl = (showRozpiska: boolean) => {
+const buildViewUrl = (view: AppView) => {
   if (typeof window === 'undefined') {
     return '/'
   }
 
   const nextUrl = new URL(window.location.href)
 
-  if (showRozpiska) {
-    nextUrl.searchParams.set(VIEW_PARAM, ROZPISKA_VIEW_VALUE)
-  } else {
+  if (view === 'test') {
     nextUrl.searchParams.delete(VIEW_PARAM)
+  } else {
+    nextUrl.searchParams.set(VIEW_PARAM, view === 'rozpiska' ? ROZPISKA_VIEW_VALUE : PRINT_CARD_VIEW_VALUE)
   }
 
   return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
@@ -55,7 +69,7 @@ const buildViewUrl = (showRozpiska: boolean) => {
 
 function App() {
   const urlPattern = /https?:\/\/[^\s)]+/g
-  const showRozpiskaView = isRozpiskaViewEnabled()
+  const currentView = getViewFromUrl()
 
   const renderIntroNote = (note: string) => {
     const normalizedNote = note.replace(/^\d+\.\s*/, '')
@@ -168,8 +182,12 @@ function App() {
     }
   }
 
-  if (showRozpiskaView) {
-    return <RozpiskaView backToTestUrl={buildViewUrl(false)} />
+  if (currentView === 'rozpiska') {
+    return <RozpiskaView backToTestUrl={buildViewUrl('test')} />
+  }
+
+  if (currentView === 'karta') {
+    return <CharismCardPrintView charisms={charisms} backToTestUrl={buildViewUrl('test')} />
   }
 
   return (
@@ -191,8 +209,11 @@ function App() {
           <h1>Test Charyzmaty</h1>
           <p className="description">{instructionText}</p>
           <div className="view-actions">
-            <a className="view-link" href={buildViewUrl(true)}>
+            <a className="view-link" href={buildViewUrl('rozpiska')}>
               Zobacz plan formacji
+            </a>
+            <a className="view-link" href={buildViewUrl('karta')}>
+              Karta do wydruku/PDF
             </a>
           </div>
         </header>
