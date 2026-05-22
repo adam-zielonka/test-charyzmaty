@@ -559,12 +559,12 @@ button {
   gap: 0.36rem;
 }
 
-.description-grid {
+.print-page-two-grid {
   column-count: 2;
   column-gap: 1rem;
 }
 
-.description-section {
+.print-page-two-section {
   border: 1px solid #d3c2a7;
   border-radius: 12px;
   background: #fffdf8;
@@ -580,30 +580,34 @@ button {
   }
 }
 
-.description-section-keep-together {
+.print-page-two-section-keep-together {
   break-inside: avoid;
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
 }
 
-.description-intro {
+.print-page-one-intro,
+.print-page-two-intro {
   margin: 0 0 0.55rem;
   line-height: 1.5;
   color: #4a3f2d;
 }
 
-.description-list {
+.print-page-one-list,
+.print-page-two-list {
   margin: 0;
   padding-left: 1.1rem;
   display: grid;
   gap: 0.5rem;
 }
 
-.description-entry {
+.print-page-one-entry,
+.print-page-two-entry {
   line-height: 1.52;
 }
 
-.description-entry-name {
+.print-page-one-entry-name,
+.print-page-two-entry-name {
   color: #4f3f26;
 }
 
@@ -676,12 +680,12 @@ button {
       line-height: 1.2;
     }
 
-    .description-intro {
+    .print-page-one-intro {
       font-size: 0.78rem;
       line-height: 1.24;
     }
 
-    .description-entry {
+    .print-page-one-entry {
       font-size: 0.76rem;
       line-height: 1.24;
     }
@@ -700,12 +704,12 @@ button {
     }
   }
 
-  .description-grid {
+  .print-page-two-grid {
     column-count: 2;
     column-gap: 0.8rem;
   }
 
-  .description-section {
+  .print-page-two-section {
     border: 0;
     border-radius: 0;
     padding: 0.17rem 0.2rem;
@@ -720,24 +724,24 @@ button {
     }
   }
 
-  .description-section-keep-together {
+  .print-page-two-section-keep-together {
     break-inside: avoid;
     page-break-inside: avoid;
     -webkit-column-break-inside: avoid;
   }
 
-  .description-intro {
+  .print-page-two-intro {
     margin-bottom: 0.18rem;
     font-size: 0.77rem;
     line-height: 1.28;
   }
 
-  .description-list {
+  .print-page-two-list {
     gap: 0.16rem;
     padding-left: 0.84rem;
   }
 
-  .description-entry {
+  .print-page-two-entry {
     font-size: 0.75rem;
     line-height: 1.26;
   }
@@ -789,7 +793,7 @@ button {
     }
   }
 
-  .description-grid {
+  .print-page-two-grid {
     column-count: 2;
   }
 }
@@ -813,7 +817,7 @@ button {
     width: 100%;
   }
 
-  .description-grid {
+  .print-page-two-grid {
     column-count: 1;
   }
 }

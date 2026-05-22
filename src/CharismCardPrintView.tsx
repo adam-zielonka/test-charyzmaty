@@ -119,13 +119,13 @@ const mapDescriptionNameToCharism = (entryName: string | null): string | null =>
   return DESCRIPTION_NAME_TO_CHARISM[normalizedName] ?? null
 }
 
-const getDescriptionSectionClassName = (sectionTitle: string) => {
+const getSecondPageSectionClassName = (sectionTitle: string) => {
   const normalizedTitle = normalizeForComparison(sectionTitle)
   const shouldKeepTogether = normalizedTitle.includes('stylu zycia')
 
   return shouldKeepTogether
-    ? 'description-section description-section-keep-together'
-    : 'description-section'
+    ? 'print-page-two-section print-page-two-section-keep-together'
+    : 'print-page-two-section'
 }
 
 function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewProps) {
@@ -233,23 +233,26 @@ function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewP
       </section>
 
       {generalRecognitionSection ? (
-        <section className="print-general-recognition" aria-label={generalRecognitionSection.title}>
+        <section
+          className="print-general-recognition print-page-one-general-recognition"
+          aria-label={generalRecognitionSection.title}
+        >
           <h2>{generalRecognitionSection.title}</h2>
 
           {generalRecognitionSection.intro.map((paragraph) => (
-            <p key={paragraph} className="description-intro">
+            <p key={paragraph} className="print-page-one-intro">
               {paragraph}
             </p>
           ))}
 
           {generalRecognitionSection.entries.length > 0 ? (
-            <ul className="description-list print-general-recognition-list">
+            <ul className="print-page-one-list print-general-recognition-list">
               {generalRecognitionSection.entries.map((entry) => (
                 <li
                   key={`${generalRecognitionSection.title}-${entry.name ?? 'entry'}-${entry.text.slice(0, 40)}`}
-                  className="description-entry"
+                  className="print-page-one-entry"
                 >
-                  {entry.name ? <strong className="description-entry-name">{entry.name}:</strong> : null}{' '}
+                  {entry.name ? <strong className="print-page-one-entry-name">{entry.name}:</strong> : null}{' '}
                   <span>{entry.text}</span>
                 </li>
               ))}
@@ -258,27 +261,27 @@ function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewP
         </section>
       ) : null}
 
-      <section className="print-descriptions-page" aria-label="Opisy charyzmatow">
+      <section className="print-descriptions-page print-page-two-descriptions" aria-label="Opisy charyzmatow">
         <h2>Opisy charyzmatow</h2>
-        <div className="description-grid">
+        <div className="print-page-two-grid">
           {groupedDescriptionSections.map((section) => (
-            <article key={section.title} className={getDescriptionSectionClassName(section.title)}>
+            <article key={section.title} className={getSecondPageSectionClassName(section.title)}>
               <h3>{section.title}</h3>
 
               {section.intro.map((paragraph) => (
-                <p key={paragraph} className="description-intro">
+                <p key={paragraph} className="print-page-two-intro">
                   {paragraph}
                 </p>
               ))}
 
               {section.entries.length > 0 ? (
-                <ul className="description-list">
+                <ul className="print-page-two-list">
                   {section.entries.map((entry) => (
                     <li
                       key={`${section.title}-${entry.name ?? 'entry'}-${entry.text.slice(0, 40)}`}
-                      className="description-entry"
+                      className="print-page-two-entry"
                     >
-                      {entry.name ? <strong className="description-entry-name">{entry.name}:</strong> : null}{' '}
+                      {entry.name ? <strong className="print-page-two-entry-name">{entry.name}:</strong> : null}{' '}
                       <span>{entry.text}</span>
                     </li>
                   ))}
