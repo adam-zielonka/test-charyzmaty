@@ -1,3 +1,4 @@
+// Theme tokens and defaults.
 :root {
   --text: #2f2a1f;
   --muted: #625745;
@@ -18,10 +19,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+// Base reset.
 * {
   box-sizing: border-box;
 }
 
+// Document shell.
 body {
   margin: 0;
   min-height: 100vh;
@@ -40,21 +43,7 @@ body {
   box-shadow: 0 12px 42px rgba(64, 40, 18, 0.12);
 }
 
-@media (max-width: 600px) {
-  body {
-    overflow-x: hidden;
-  }
-
-  #root {
-    width: 100%;
-    margin: 0;
-    min-height: 100dvh;
-    border-radius: 0;
-    border-inline: 0;
-    box-shadow: none;
-  }
-}
-
+// Typography.
 h1,
 h2 {
   margin: 0;
@@ -74,4 +63,20 @@ h2 {
 
 p {
   margin: 0;
+}
+
+// Small screens.
+@media (max-width: 600px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    margin: 0;
+    min-height: 100dvh;
+    border-radius: 0;
+    border-inline: 0;
+    box-shadow: none;
+  }
 }

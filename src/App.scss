@@ -1,3 +1,32 @@
+// Core design tokens local to this view layer.
+$radius-pill: 999px;
+$radius-panel: 18px;
+$radius-card: 14px;
+$progress-gradient: linear-gradient(90deg, #36746a, #4f9e90);
+
+%panel-shell {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: $radius-panel;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+%meter-track {
+  width: min(340px, 60vw);
+  height: 10px;
+  border-radius: $radius-pill;
+  background: #e7dfd0;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: $progress-gradient;
+    transition: width 260ms ease;
+  }
+}
+
+// Layout and global wrappers.
 .app {
   display: grid;
   gap: 1.3rem;
@@ -36,75 +65,70 @@
   align-items: center;
   gap: 0.35rem;
   border: 1px solid #b79665;
-  border-radius: 999px;
+  border-radius: $radius-pill;
   padding: 0.35rem 0.75rem;
   color: #5d3d17;
   text-decoration: none;
   font-weight: 700;
   background: #fff7e8;
+
+  &:hover,
+  &:focus-visible {
+    background: #ffecca;
+  }
 }
 
-.view-link:hover,
-.view-link:focus-visible {
-  background: #ffecca;
-}
-
+// Panels and shared content containers.
 .notes,
 .scale,
 .progress-panel,
 .question-section,
 .result-action,
-.results {
-  background: var(--panel-bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: clamp(1rem, 2.5vw, 1.5rem);
+.results,
+.schedule-section {
+  @extend %panel-shell;
 }
 
-.notes ol,
-.scale ul,
-.ranking {
-  margin: 0;
-  padding-left: 1.1rem;
-}
+.notes {
+  ol {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
 
-.notes li {
-  margin: 0.7rem 0;
+  li {
+    margin: 0.7rem 0;
+  }
 }
 
 .note-link {
   color: #1e6f93;
   text-decoration: underline;
   text-underline-offset: 2px;
+
+  &:hover,
+  &:focus-visible {
+    color: #15536e;
+  }
 }
 
-.note-link:hover,
-.note-link:focus-visible {
-  color: #15536e;
+.scale {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+  }
 }
 
-.scale ul {
-  list-style: none;
-  padding-left: 0;
-  display: grid;
-  gap: 0.35rem;
-}
-
-.scale li {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-weight: 600;
-}
-
-.progress-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 1rem;
-  background: var(--panel-bg);
-}
-
+// Progress indicators.
 .top-progress {
   position: fixed;
   top: env(safe-area-inset-top, 0);
@@ -114,13 +138,20 @@
   background: color-mix(in srgb, #d8d0bf 75%, white 25%);
   z-index: 40;
   pointer-events: none;
+
+  span {
+    display: block;
+    height: 100%;
+    background: $progress-gradient;
+    transition: width 260ms ease;
+  }
 }
 
-.top-progress span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #36746a, #4f9e90);
-  transition: width 260ms ease;
+.progress-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
 }
 
 .progress-title {
@@ -144,21 +175,10 @@
 
 .progress-track,
 .bar {
-  width: min(340px, 60vw);
-  height: 10px;
-  border-radius: 999px;
-  background: #e7dfd0;
-  overflow: hidden;
+  @extend %meter-track;
 }
 
-.progress-track span,
-.bar span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #36746a, #4f9e90);
-  transition: width 260ms ease;
-}
-
+// Question list and answer controls.
 .question-header,
 .results-header {
   display: flex;
@@ -175,7 +195,7 @@
 
 .question-card {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: $radius-card;
   padding: 0.95rem;
   background: #fffdf8;
 }
@@ -200,41 +220,46 @@ fieldset {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.45rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+
+    &:checked + span {
+      background: #316f65;
+      color: #fff;
+      border-color: #316f65;
+    }
+  }
+
+  span {
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+    background: #f7f2e7;
+    font-weight: 600;
+  }
 }
 
-.answer-options label {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.answer-options input {
-  position: absolute;
-  opacity: 0;
-}
-
-.answer-options span {
-  width: 100%;
-  text-align: left;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0.4rem 0.7rem;
-  background: #f7f2e7;
-  font-weight: 600;
-}
-
-.answer-options input:checked + span {
-  background: #316f65;
-  color: white;
-  border-color: #316f65;
-}
-
+// Results and ranking.
 .result-action {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
   gap: 0.8rem;
+
+  h3 {
+    margin: 0;
+  }
 }
 
 .result-actions-grid {
@@ -243,33 +268,29 @@ fieldset {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-.result-action h3 {
-  margin: 0;
-}
-
 .result-link-panel {
   margin: 0.9rem 0 1rem;
   display: grid;
   gap: 0.45rem;
-}
 
-.result-link-panel label {
-  font-weight: 700;
+  label {
+    font-weight: 700;
+  }
 }
 
 .result-link-row {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.55rem;
-}
 
-.result-link-row input {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.5rem 0.65rem;
-  font: inherit;
-  background: #fffcf4;
-  min-width: 0;
+  input {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.5rem 0.65rem;
+    font: inherit;
+    background: #fffcf4;
+    min-width: 0;
+  }
 }
 
 .result-link-status {
@@ -286,29 +307,30 @@ button {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-}
 
-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }
 
 .ranking {
   list-style: none;
+  margin: 0;
   padding: 0;
   display: grid;
   gap: 0.55rem;
-}
 
-.ranking li {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fffdf8;
-  padding: 0.6rem 0.7rem;
-}
+  li {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fffdf8;
+    padding: 0.6rem 0.7rem;
 
-.ranking li.highlighted {
-  border-color: #3b8175;
+    &.highlighted {
+      border-color: #3b8175;
+    }
+  }
 }
 
 .ranking-main {
@@ -328,20 +350,14 @@ button:disabled {
 .ranking-link {
   color: inherit;
   text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
 }
 
-.ranking-link:hover,
-.ranking-link:focus-visible {
-  text-decoration: underline;
-}
-
-.schedule-section {
-  background: var(--panel-bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: clamp(1rem, 2.5vw, 1.5rem);
-}
-
+// Formation schedule cards.
 .chapters {
   margin-top: 0.95rem;
   display: grid;
@@ -350,16 +366,21 @@ button:disabled {
 
 .chapter-tag {
   margin: 0.35rem 0;
-}
 
-.chapter-tag h3 {
-  margin: 0;
-  color: #5f4e33;
+  h3 {
+    margin: 0;
+    color: #5f4e33;
+  }
 }
 
 .chapter-link {
   text-decoration: none;
   color: inherit;
+
+  &:focus-visible .chapter {
+    border-color: #9b7f54;
+    background: #fff7ea;
+  }
 }
 
 .chapter {
@@ -369,12 +390,11 @@ button:disabled {
   padding: 0.75rem;
   display: grid;
   gap: 0.35rem;
-}
 
-.chapter:hover,
-.chapter-link:focus-visible .chapter {
-  border-color: #9b7f54;
-  background: #fff7ea;
+  &:hover {
+    border-color: #9b7f54;
+    background: #fff7ea;
+  }
 }
 
 .info {
@@ -389,6 +409,7 @@ button:disabled {
   font-size: 1rem;
 }
 
+// Utilities.
 .sr-only {
   position: absolute;
   width: 1px;
@@ -400,6 +421,7 @@ button:disabled {
   border: 0;
 }
 
+// Print view blocks.
 .print-app {
   gap: 1rem;
 }
@@ -420,11 +442,11 @@ button:disabled {
   grid-template-columns: auto 1fr;
   align-items: center;
   font-weight: 600;
-}
 
-.print-line-field .line {
-  border-bottom: 1px solid #8a795e;
-  min-height: 1.2rem;
+  .line {
+    border-bottom: 1px solid #8a795e;
+    min-height: 1.2rem;
+  }
 }
 
 .print-button {
@@ -435,7 +457,7 @@ button:disabled {
 .print-table-section {
   background: var(--panel-bg);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: $radius-panel;
   padding: clamp(0.8rem, 2vw, 1.1rem);
 }
 
@@ -462,6 +484,10 @@ button:disabled {
   font-weight: 600;
   font-size: 0.86rem;
   line-height: 1.2;
+
+  &.empty {
+    visibility: hidden;
+  }
 }
 
 .print-charism-name {
@@ -473,10 +499,6 @@ button:disabled {
   grid-auto-flow: column;
   grid-auto-columns: min-content;
   gap: 0.18rem;
-}
-
-.print-charism-item.empty {
-  visibility: hidden;
 }
 
 .print-mark-box {
@@ -511,26 +533,26 @@ button:disabled {
   display: block;
 }
 
-.print-descriptions-page {
+.print-descriptions-page,
+.print-general-recognition {
   background: var(--panel-bg);
   border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: clamp(0.9rem, 2vw, 1.3rem);
+  border-radius: $radius-panel;
   display: grid;
+}
+
+.print-descriptions-page {
+  padding: clamp(0.9rem, 2vw, 1.3rem);
   gap: 0.95rem;
 }
 
 .print-general-recognition {
-  background: var(--panel-bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
   padding: clamp(0.75rem, 1.8vw, 1rem);
-  display: grid;
   gap: 0.45rem;
-}
 
-.print-general-recognition h2 {
-  margin: 0;
+  h2 {
+    margin: 0;
+  }
 }
 
 .print-general-recognition-list {
@@ -550,18 +572,18 @@ button:disabled {
   margin: 0 0 0.7rem;
   break-inside: auto;
   page-break-inside: auto;
+
+  h3 {
+    margin: 0 0 0.55rem;
+    color: #5f4e33;
+    line-height: 1.25;
+  }
 }
 
 .description-section-keep-together {
   break-inside: avoid;
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
-}
-
-.description-section h3 {
-  margin: 0 0 0.55rem;
-  color: #5f4e33;
-  line-height: 1.25;
 }
 
 .description-intro {
@@ -593,6 +615,7 @@ button:disabled {
   line-height: 1.33;
 }
 
+// Print-mode overrides.
 @media print {
   @page {
     size: A4 portrait;
@@ -647,21 +670,21 @@ button:disabled {
   .print-general-recognition {
     padding: 0.44rem 0.5rem;
     gap: 0.2rem;
-  }
 
-  .print-general-recognition h2 {
-    font-size: 0.94rem;
-    line-height: 1.2;
-  }
+    h2 {
+      font-size: 0.94rem;
+      line-height: 1.2;
+    }
 
-  .print-general-recognition .description-intro {
-    font-size: 0.78rem;
-    line-height: 1.24;
-  }
+    .description-intro {
+      font-size: 0.78rem;
+      line-height: 1.24;
+    }
 
-  .print-general-recognition .description-entry {
-    font-size: 0.76rem;
-    line-height: 1.24;
+    .description-entry {
+      font-size: 0.76rem;
+      line-height: 1.24;
+    }
   }
 
   .print-descriptions-page {
@@ -669,12 +692,12 @@ button:disabled {
     page-break-before: always;
     padding: 0.58rem 0.62rem;
     gap: 0.32rem;
-  }
 
-  .print-descriptions-page > h2 {
-    margin: 0;
-    font-size: 1.02rem;
-    line-height: 1.2;
+    > h2 {
+      margin: 0;
+      font-size: 1.02rem;
+      line-height: 1.2;
+    }
   }
 
   .description-grid {
@@ -689,18 +712,18 @@ button:disabled {
     margin: 0 0 0.28rem;
     break-inside: auto;
     page-break-inside: auto;
+
+    h3 {
+      font-size: 0.86rem;
+      margin-bottom: 0.16rem;
+      line-height: 1.22;
+    }
   }
 
   .description-section-keep-together {
     break-inside: avoid;
     page-break-inside: avoid;
     -webkit-column-break-inside: avoid;
-  }
-
-  .description-section h3 {
-    font-size: 0.86rem;
-    margin-bottom: 0.16rem;
-    line-height: 1.22;
   }
 
   .description-intro {
@@ -749,20 +772,21 @@ button:disabled {
   }
 }
 
+// Responsive adaptations.
 @media screen and (min-width: 1200px) {
   .answer-options {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: stretch;
-  }
 
-  .answer-options label {
-    height: 100%;
-  }
+    label {
+      height: 100%;
+    }
 
-  .answer-options span {
-    height: 100%;
-    display: flex;
-    align-items: center;
+    span {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
   }
 
   .description-grid {
@@ -792,7 +816,6 @@ button:disabled {
   .description-grid {
     column-count: 1;
   }
-
 }
 
 @media screen and (max-width: 600px) {
@@ -826,12 +849,12 @@ button:disabled {
   .answer-options {
     grid-template-columns: 1fr;
     gap: 0.4rem;
-  }
 
-  .answer-options span {
-    padding: 0.52rem 0.65rem;
-    line-height: 1.25;
-    overflow-wrap: anywhere;
+    span {
+      padding: 0.52rem 0.65rem;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
   }
 
   .result-actions-grid {

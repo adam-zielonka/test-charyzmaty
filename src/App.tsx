@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import RozpiskaView from './RozpiskaView'
 import CharismCardPrintView from './CharismCardPrintView'
 import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
-import './App.css'
+import './App.scss'
 
 const RESULT_PARAM = 'wynik'
 const VIEW_PARAM = 'widok'
