@@ -83,6 +83,7 @@ const normalizeForComparison = (value: string) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ł/g, 'l')
 
 const DESCRIPTION_NAME_TO_CHARISM: Record<string, string> = {
   administracja: 'Administracji',
@@ -141,21 +142,10 @@ function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewP
     .flatMap((section) => section.entries)
     .map((entry) => mapDescriptionNameToCharism(entry.name))
     .filter((charism): charism is string => Boolean(charism))
-  const descriptionOrderSet = new Set<string>(descriptionOrder)
-  const orderedCharisms = [
-    ...descriptionOrder.filter((charism) => charisms.includes(charism)),
-    ...charisms.filter((charism) => !descriptionOrderSet.has(charism)),
-  ]
-  const charismRows = orderedCharisms.reduce<string[][]>((rows, charism, index) => {
-    if (index % 2 === 0) {
-      rows.push([charism])
-      return rows
-    }
-
-    rows[rows.length - 1].push(charism)
-    return rows
-  }, [])
-  const rowCount = charismRows.length
+  const orderedCharisms = descriptionOrder.filter((charism) => charisms.includes(charism))
+  const rowCount = Math.ceil(orderedCharisms.length / 2)
+  const firstColumnCharisms = orderedCharisms.slice(0, rowCount)
+  const secondColumnCharisms = orderedCharisms.slice(rowCount)
 
   return (
     <main className="app print-app">
@@ -188,7 +178,7 @@ function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewP
           <tbody>
             {Array.from({ length: rowCount }).map((_, rowIndex) => (
               <tr key={`row-${rowIndex}`}>
-                {[charismRows[rowIndex][0], charismRows[rowIndex][1]].map((charism, columnIndex) => (
+                {[firstColumnCharisms[rowIndex], secondColumnCharisms[rowIndex]].map((charism, columnIndex) => (
                   <td key={`cell-${rowIndex}-${columnIndex}`} className="print-charism-cell">
                     {charism ? (
                       <div className="print-charism-item">
