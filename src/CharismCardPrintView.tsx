@@ -277,13 +277,13 @@ function CharismCardPrintView({ charisms, backToTestUrl }: CharismCardPrintViewP
               {section.entries.length > 0 ? (
                 <ul className="print-page-two-list">
                   {section.entries.map((entry) => (
-                    <li
+                    <div
                       key={`${section.title}-${entry.name ?? 'entry'}-${entry.text.slice(0, 40)}`}
-                      className="print-page-two-entry"
+                      className="print-page-two-entry-content"
                     >
                       {entry.name ? <strong className="print-page-two-entry-name">{entry.name}:</strong> : null}{' '}
                       <span>{entry.text}</span>
-                    </li>
+                    </div>
                   ))}
                 </ul>
               ) : null}
