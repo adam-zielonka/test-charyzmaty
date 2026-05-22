@@ -596,7 +596,7 @@ button:disabled {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 6mm;
+    margin: 5mm;
   }
 
   *,
@@ -650,17 +650,17 @@ button:disabled {
   }
 
   .print-general-recognition h2 {
-    font-size: 0.9rem;
+    font-size: 0.94rem;
     line-height: 1.2;
   }
 
   .print-general-recognition .description-intro {
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     line-height: 1.24;
   }
 
   .print-general-recognition .description-entry {
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     line-height: 1.24;
   }
 
@@ -698,14 +698,14 @@ button:disabled {
   }
 
   .description-section h3 {
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     margin-bottom: 0.16rem;
     line-height: 1.22;
   }
 
   .description-intro {
     margin-bottom: 0.18rem;
-    font-size: 0.75rem;
+    font-size: 0.77rem;
     line-height: 1.28;
   }
 
@@ -715,7 +715,7 @@ button:disabled {
   }
 
   .description-entry {
-    font-size: 0.73rem;
+    font-size: 0.75rem;
     line-height: 1.26;
   }
 
@@ -734,13 +734,13 @@ button:disabled {
   }
 
   .print-charism-item {
-    min-height: 1.72rem;
-    font-size: 0.76rem;
+    min-height: 1.82rem;
+    font-size: 0.79rem;
   }
 
   .print-mark-box {
-    width: 0.67rem;
-    height: 0.67rem;
+    width: 0.7rem;
+    height: 0.7rem;
     border-color: #333;
   }
 
