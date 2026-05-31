@@ -12,6 +12,10 @@ const ANSWERS_STORAGE_KEY = 'test-charyzmaty-answers'
 const EMPTY_ANSWERS = new Array(questions.length).fill(null) as (number | null)[]
 
 type AppView = 'test' | 'rozpiska' | 'karta'
+type InitialAnswersState = {
+  answers: (number | null)[]
+  isSharedResult: boolean
+}
 
 const isEncodedAnswersValid = (encodedAnswers: string) =>
   encodedAnswers.length === questions.length && /^[0-4x]+$/.test(encodedAnswers)
@@ -19,18 +23,14 @@ const isEncodedAnswersValid = (encodedAnswers: string) =>
 const decodeAnswers = (encodedAnswers: string) =>
   [...encodedAnswers].map((value) => (value === 'x' ? null : Number(value)))
 
-const decodeAnswersFromUrl = () => {
+const getEncodedAnswersFromUrl = () => {
   if (typeof window === 'undefined') {
-    return [...EMPTY_ANSWERS]
+    return null
   }
 
   const encodedAnswers = new URLSearchParams(window.location.search).get(RESULT_PARAM)
 
-  if (!encodedAnswers || !isEncodedAnswersValid(encodedAnswers)) {
-    return [...EMPTY_ANSWERS]
-  }
-
-  return decodeAnswers(encodedAnswers)
+  return encodedAnswers && isEncodedAnswersValid(encodedAnswers) ? encodedAnswers : null
 }
 
 const decodeAnswersFromStorage = () => {
@@ -84,6 +84,22 @@ const buildViewUrl = (view: AppView) => {
   return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
 }
 
+const getInitialAnswersState = (): InitialAnswersState => {
+  const encodedAnswersFromUrl = getEncodedAnswersFromUrl()
+
+  if (encodedAnswersFromUrl) {
+    return {
+      answers: decodeAnswers(encodedAnswersFromUrl),
+      isSharedResult: true,
+    }
+  }
+
+  return {
+    answers: decodeAnswersFromStorage(),
+    isSharedResult: false,
+  }
+}
+
 function App() {
   const urlPattern = /https?:\/\/[^\s)]+/g
   const currentView = getViewFromUrl()
@@ -115,21 +131,21 @@ function App() {
     })
   }
 
-  const [answers, setAnswers] = useState<(number | null)[]>(() => {
-    const answersFromUrl = decodeAnswersFromUrl()
-    const hasAnswersInUrl = answersFromUrl.some((answer) => answer !== null)
-
-    return hasAnswersInUrl ? answersFromUrl : decodeAnswersFromStorage()
-  })
+  const [{ answers: initialAnswers, isSharedResult }] = useState<InitialAnswersState>(getInitialAnswersState)
+  const [answers, setAnswers] = useState<(number | null)[]>(initialAnswers)
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+  const [isEditingSharedResult, setIsEditingSharedResult] = useState(false)
+  const [areQuestionsExpanded, setAreQuestionsExpanded] = useState(!isSharedResult)
+
+  const shouldPersistAnswers = !isSharedResult || isEditingSharedResult
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !shouldPersistAnswers) {
       return
     }
 
     window.localStorage.setItem(ANSWERS_STORAGE_KEY, encodeAnswersForUrl(answers))
-  }, [answers])
+  }, [answers, shouldPersistAnswers])
 
   const answeredCount = useMemo(
     () => answers.filter((answer) => answer !== null).length,
@@ -174,6 +190,7 @@ function App() {
   )
 
   const maxPossibleScore = 20
+  const isViewingSharedResult = isSharedResult && !isEditingSharedResult
 
   const handleAnswerChange = (questionIndex: number, value: number) => {
     setAnswers((currentAnswers) => {
@@ -198,6 +215,20 @@ function App() {
     setCopyStatus('idle')
   }
 
+  const handleModifyQuestions = () => {
+    const shouldEnableEditing = window.confirm(
+      'Włączenie edycji nadpisze odpowiedzi zapisane obecnie w pamięci przeglądarki na tym urządzeniu. Czy chcesz kontynuować?',
+    )
+
+    if (!shouldEnableEditing) {
+      return
+    }
+
+    setIsEditingSharedResult(true)
+    setAreQuestionsExpanded(true)
+    setCopyStatus('idle')
+  }
+
   const handleCopyLink = async () => {
     if (!shareLink) {
       setCopyStatus('error')
@@ -219,6 +250,82 @@ function App() {
   if (currentView === 'karta') {
     return <CharismCardPrintView charisms={charisms} backToTestUrl={buildViewUrl('test')} />
   }
+
+  const resultsSection = (
+    <section className="results">
+      <div className="results-header">
+        <h2>Wynik</h2>
+      </div>
+
+      <p className="result-hint">
+        Każdy charyzmat ma maksymalnie {maxPossibleScore} punktów (5 pytań x 4 punkty).
+      </p>
+
+      <ol className="ranking">
+        {ranking.map((item, index) => {
+          const widthPercent = Math.round((item.score / maxPossibleScore) * 100)
+
+          return (
+            <li key={item.name} className={index < 3 ? 'highlighted' : ''}>
+              <div className="ranking-main">
+                <a
+                  className="ranking-name ranking-link"
+                  href={charismVideoLinks[item.name]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.name}
+                </a>
+                <span className="ranking-score">
+                  {item.score}/{maxPossibleScore}
+                </span>
+              </div>
+              <div className="bar" aria-hidden="true">
+                <span style={{ width: `${widthPercent}%` }}></span>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </section>
+  )
+
+  const questionsSection = (
+    <section className="question-section">
+      <div className="question-header">
+        <h2>Pytania</h2>
+        <p>Wszystkie pytania na jednej stronie</p>
+      </div>
+
+      <div className="question-list">
+        {questions.map((question, absoluteIndex) => {
+          return (
+            <article className="question-card" key={`${absoluteIndex}-${question}`}>
+              <p className="question-number">{absoluteIndex + 1}.</p>
+              <p className="question-text">{question}</p>
+
+              <fieldset disabled={isViewingSharedResult}>
+                <legend className="sr-only">Wybierz ocenę</legend>
+                <div className="answer-options">
+                  {answerScale.map((option) => (
+                    <label key={option.value}>
+                      <input
+                        type="radio"
+                        name={`question-${absoluteIndex}`}
+                        checked={answers[absoluteIndex] === option.value}
+                        onChange={() => handleAnswerChange(absoluteIndex, option.value)}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </article>
+          )
+        })}
+      </div>
+    </section>
+  )
 
   return (
     <>
@@ -283,84 +390,38 @@ function App() {
           </div>
         </section>
 
-        <section className="question-section">
-          <div className="question-header">
-            <h2>Pytania</h2>
-            <p>Wszystkie pytania na jednej stronie</p>
-          </div>
+        {isViewingSharedResult ? resultsSection : questionsSection}
 
-          <div className="question-list">
-            {questions.map((question, absoluteIndex) => {
-              return (
-                <article className="question-card" key={`${absoluteIndex}-${question}`}>
-                  <p className="question-number">{absoluteIndex + 1}.</p>
-                  <p className="question-text">{question}</p>
-
-                  <fieldset>
-                    <legend className="sr-only">Wybierz ocenę</legend>
-                    <div className="answer-options">
-                      {answerScale.map((option) => (
-                        <label key={option.value}>
-                          <input
-                            type="radio"
-                            name={`question-${absoluteIndex}`}
-                            checked={answers[absoluteIndex] === option.value}
-                            onChange={() => handleAnswerChange(absoluteIndex, option.value)}
-                          />
-                          <span>{option.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-
-        <section className="results">
-          <div className="results-header">
-            <h2>Wynik</h2>
-          </div>
-
-          <p className="result-hint">
-            Każdy charyzmat ma maksymalnie {maxPossibleScore} punktów (5 pytań x 4 punkty).
-          </p>
-
-          <ol className="ranking">
-            {ranking.map((item, index) => {
-              const widthPercent = Math.round((item.score / maxPossibleScore) * 100)
-
-              return (
-                <li key={item.name} className={index < 3 ? 'highlighted' : ''}>
-                  <div className="ranking-main">
-                    <a
-                      className="ranking-name ranking-link"
-                      href={charismVideoLinks[item.name]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.name}
-                    </a>
-                    <span className="ranking-score">
-                      {item.score}/{maxPossibleScore}
-                    </span>
-                  </div>
-                  <div className="bar" aria-hidden="true">
-                    <span style={{ width: `${widthPercent}%` }}></span>
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
-        </section>
+        {isViewingSharedResult ? (
+          <details
+            className="shared-questions"
+            open={areQuestionsExpanded}
+            onToggle={(event) => setAreQuestionsExpanded(event.currentTarget.open)}
+          >
+            <summary>Pokaż pytania i odpowiedzi</summary>
+            <div className="shared-questions-body">{questionsSection}</div>
+          </details>
+        ) : (
+          resultsSection
+        )}
 
         <section className="result-actions-grid">
           <section className="result-action">
             <h3>Zarządzanie odpowiedziami</h3>
-            <button type="button" onClick={resetAnswers}>
-              Wyczyść odpowiedzi
-            </button>
+            {isViewingSharedResult ? (
+              <>
+                <button type="button" onClick={handleModifyQuestions}>
+                  Zmodyfikuj pytania
+                </button>
+                <p className="warning-note">
+                  To nadpisze wersję odpowiedzi przechowywaną w pamięci przeglądarki na tym urządzeniu.
+                </p>
+              </>
+            ) : (
+              <button type="button" onClick={resetAnswers}>
+                Wyczyść odpowiedzi
+              </button>
+            )}
             <p className="privacy-note">
               Odpowiedzi nie są nigdzie wysyłane. Zapisują się wyłącznie lokalnie w pamięci
               przeglądarki na tym urządzeniu, dzięki czemu pozostają dostępne po odświeżeniu strony.
