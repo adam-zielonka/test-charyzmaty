@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import RozpiskaView from './RozpiskaView'
 import CharismCardPrintView from './CharismCardPrintView'
 import { answerScale, charismVideoLinks, charisms, instructionText, introNotes, questions } from './testData'
@@ -8,9 +8,16 @@ const RESULT_PARAM = 'wynik'
 const VIEW_PARAM = 'widok'
 const ROZPISKA_VIEW_VALUE = 'rozpiska'
 const PRINT_CARD_VIEW_VALUE = 'karta'
+const ANSWERS_STORAGE_KEY = 'test-charyzmaty-answers'
 const EMPTY_ANSWERS = new Array(questions.length).fill(null) as (number | null)[]
 
 type AppView = 'test' | 'rozpiska' | 'karta'
+
+const isEncodedAnswersValid = (encodedAnswers: string) =>
+  encodedAnswers.length === questions.length && /^[0-4x]+$/.test(encodedAnswers)
+
+const decodeAnswers = (encodedAnswers: string) =>
+  [...encodedAnswers].map((value) => (value === 'x' ? null : Number(value)))
 
 const decodeAnswersFromUrl = () => {
   if (typeof window === 'undefined') {
@@ -19,15 +26,25 @@ const decodeAnswersFromUrl = () => {
 
   const encodedAnswers = new URLSearchParams(window.location.search).get(RESULT_PARAM)
 
-  if (!encodedAnswers || encodedAnswers.length !== questions.length) {
+  if (!encodedAnswers || !isEncodedAnswersValid(encodedAnswers)) {
     return [...EMPTY_ANSWERS]
   }
 
-  if (!/^[0-4x]+$/.test(encodedAnswers)) {
+  return decodeAnswers(encodedAnswers)
+}
+
+const decodeAnswersFromStorage = () => {
+  if (typeof window === 'undefined') {
     return [...EMPTY_ANSWERS]
   }
 
-  return [...encodedAnswers].map((value) => (value === 'x' ? null : Number(value)))
+  const encodedAnswers = window.localStorage.getItem(ANSWERS_STORAGE_KEY)
+
+  if (!encodedAnswers || !isEncodedAnswersValid(encodedAnswers)) {
+    return [...EMPTY_ANSWERS]
+  }
+
+  return decodeAnswers(encodedAnswers)
 }
 
 const encodeAnswersForUrl = (values: (number | null)[]) =>
@@ -98,8 +115,21 @@ function App() {
     })
   }
 
-  const [answers, setAnswers] = useState<(number | null)[]>(decodeAnswersFromUrl)
+  const [answers, setAnswers] = useState<(number | null)[]>(() => {
+    const answersFromUrl = decodeAnswersFromUrl()
+    const hasAnswersInUrl = answersFromUrl.some((answer) => answer !== null)
+
+    return hasAnswersInUrl ? answersFromUrl : decodeAnswersFromStorage()
+  })
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    window.localStorage.setItem(ANSWERS_STORAGE_KEY, encodeAnswersForUrl(answers))
+  }, [answers])
 
   const answeredCount = useMemo(
     () => answers.filter((answer) => answer !== null).length,
@@ -331,6 +361,10 @@ function App() {
             <button type="button" onClick={resetAnswers}>
               Wyczyść odpowiedzi
             </button>
+            <p className="privacy-note">
+              Odpowiedzi nie są nigdzie wysyłane. Zapisują się wyłącznie lokalnie w pamięci
+              przeglądarki na tym urządzeniu, dzięki czemu pozostają dostępne po odświeżeniu strony.
+            </p>
           </section>
 
           <section className="result-action">
