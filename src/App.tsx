@@ -432,6 +432,12 @@ function App() {
             <h3>Udostępnij ten wynik</h3>
             <div className="result-link-panel">
               <label htmlFor="result-link">Link do tego wyniku</label>
+              <p className="sharing-note">
+                Odpowiedzi są zapisane bezpośrednio w tym linku, a nie w żadnym zewnętrznym miejscu.
+                Osoba otwierająca link zobaczy zapisany wynik w trybie podglądu. Samo otwarcie linku
+                nie nadpisze odpowiedzi zapisanych lokalnie w jej przeglądarce. Dopiero wybranie opcji
+                modyfikacji pytań zapisze tę wersję jako jej własną.
+              </p>
               <div className="result-link-row">
                 <input id="result-link" type="text" value={shareLink} readOnly />
                 <button type="button" onClick={handleCopyLink}>
