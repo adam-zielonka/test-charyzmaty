@@ -1,6 +1,6 @@
 # Test Charyzmaty
 
-Aplikacja webowa (React + TypeScript + Vite) do wypełniania kwestionariusza rozeznawania charyzmatow i prezentowania wyniku punktowego dla kazdego charyzmatu.
+Aplikacja webowa (React + TypeScript + Vite) do rozeznawania charyzmatow. Zawiera test kwestionariuszowy, widok planu formacji oraz karte do wydruku/PDF do rozeznawania charyzmatow we wspolnocie.
 
 ## Co robi aplikacja
 
@@ -11,11 +11,30 @@ Aplikacja webowa (React + TypeScript + Vite) do wypełniania kwestionariusza roz
   - 2: nie jestem zdecydowany
   - 1: raczej sie nie zgadzam
   - 0: zupelnie sie nie zgadzam
+- Pokazuje uwagi wstepne i opis skali przed rozpoczeciem testu.
 - Pokazuje postep uzupelniania (liczba odpowiedzi i procent).
 - Liczy punkty dla 23 charyzmatow i wyswietla ranking malejaco.
 - Pokazuje pasek postepu dla kazdego charyzmatu (wynik / 20 punktow).
 - Dla kazdego charyzmatu udostepnia link do odpowiedniej konferencji wideo.
 - Pozwala skopiowac link do aktualnego wyniku oraz wyczyscic wszystkie odpowiedzi.
+- Zapisuje odpowiedzi lokalnie w pamieci przegladarki, zeby pozostawaly dostepne po odswiezeniu strony.
+- Udostepnia dodatkowy widok planu formacji oparty o playliste z pliku `public/rozpiska/playlist.json`.
+- Udostepnia dodatkowy widok karty do wydruku/PDF z opisami charyzmatow na podstawie pliku `opisy.txt`.
+
+## Widoki aplikacji
+
+Aplikacja obsluguje trzy widoki:
+
+- `test` - glowny widok kwestionariusza i wyniku.
+- `rozpiska` - plan formacji i lista materialow do przejscia krok po kroku.
+- `karta` - karta do wydruku/PDF do rozeznawania charyzmatow u danej osoby.
+
+Widok jest wybierany przez parametr URL `widok`:
+
+```text
+?widok=rozpiska
+?widok=karta
+```
 
 ## Logika wyniku
 
@@ -27,21 +46,25 @@ Aplikacja webowa (React + TypeScript + Vite) do wypełniania kwestionariusza roz
   - ...,
   - pytanie 24 znowu do 1. charyzmatu itd.
 
-## Link do wyniku
+## Link do wyniku i zapis odpowiedzi
 
-Aplikacja zapisuje odpowiedzi w adresie URL, w parametrze `wynik`.
+Aplikacja zapisuje odpowiedzi w adresie URL, w parametrze `wynik`, oraz lokalnie w `localStorage` przegladarki.
 
 - Kazda odpowiedz jest kodowana jako jeden znak:
   - `0`, `1`, `2`, `3`, `4` dla zaznaczonej odpowiedzi,
   - `x` dla braku odpowiedzi.
 - Dlugosc ciagu musi byc rowna liczbie pytan (115).
-- Przy otwarciu takiego linku aplikacja odtwarza zaznaczenia.
+- Przy otwarciu takiego linku aplikacja odtwarza zaznaczenia i pokazuje wynik w trybie podgladu.
+- Samo otwarcie linku nie nadpisuje odpowiedzi zapisanych lokalnie na danym urzadzeniu.
+- Dopiero wybranie opcji modyfikacji pytan zapisuje odpowiedzi z linku jako lokalna wersje uzytkownika.
 
 Przyklad formatu:
 
 ```text
 ?wynik=4x203... (115 znakow)
 ```
+
+Jesli uzytkownik otwiera aplikacje bez parametru `wynik`, zostana wczytane odpowiedzi zapisane lokalnie w przegladarce.
 
 ## Uruchomienie lokalne
 
@@ -72,3 +95,4 @@ Aplikacja bedzie dostepna pod adresem podanym przez Vite (domyslnie `http://loca
 - TypeScript
 - Vite 8
 - ESLint 10
+- Sass
