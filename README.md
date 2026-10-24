@@ -96,3 +96,12 @@ Aplikacja bedzie dostepna pod adresem podanym przez Vite (domyslnie `http://loca
 - Vite 8
 - ESLint 10
 - Sass
+
+## Development
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for the current runtime, builds and checks.
+
+## Licencja
+
+Kod aplikacji: MIT. Treści kwestionariusza i materiały formacyjne są wyłączone;
+szczegóły w [NOTICE.md](NOTICE.md).
