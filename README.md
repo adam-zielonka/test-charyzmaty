@@ -70,8 +70,8 @@ Jesli uzytkownik otwiera aplikacje bez parametru `wynik`, zostana wczytane odpow
 
 Wymagania:
 
-- Node.js 20+ (zalecane)
-- pnpm
+- Node.js 24.22+ (wersje 24–26)
+- pnpm 12
 
 Instalacja i start:
 
